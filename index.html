@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ToDo</title>
   <style>
-    /* Universal fix for padding issues */
     * {
       box-sizing: border-box;
     }
@@ -161,7 +160,7 @@
 
       .panel {
         width: 100%;
-        padding: 15px; /* reduced padding for smaller screens */
+        padding: 15px;
       }
 
       .input-row {
@@ -171,12 +170,12 @@
 
       input[type="text"], button {
         width: 100%;
-        font-size: 16px; /* bigger text for mobile typing */
+        font-size: 16px;
         padding: 12px;
       }
 
       input[type="text"] + input[type="text"] {
-        margin-top: 8px; /* spacing between stacked inputs */
+        margin-top: 8px;
       }
 
       li {
@@ -271,14 +270,14 @@
       }
       list.innerHTML = notes.map(n => `
         <div class="note-box">
-          ${n.title ? <div class="note-title">${n.title}</div> : ""}
+          ${n.title ? `<div class="note-title">${n.title}</div>` : ""}
           ${n.editing 
-            ? <input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/> 
-            : <div class="note-text">${n.text}</div>}
+            ? `<input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/>` 
+            : `<div class="note-text">${n.text}</div>`}
           <div class="note-actions">
             ${n.editing 
-              ? <button onclick="saveNote(${n.id})">Save</button> 
-              : <button onclick="editNote(${n.id})">Edit</button>}
+              ? `<button onclick="saveNote(${n.id})">Save</button>` 
+              : `<button onclick="editNote(${n.id})">Edit</button>`}
             <button class="delete" onclick="deleteNote(${n.id})">Delete</button>
           </div>
         </div>
@@ -360,4 +359,3 @@
   </script>
 </body>
 </html>
-
