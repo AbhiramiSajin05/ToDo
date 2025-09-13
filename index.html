@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ToDo</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      box-sizing: border-box;
+      background: #1e3a8a;
+      color: white;
+    }
+
+    .main {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    .panel {
+      flex: 1 1 500px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+      padding: 25px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background: #3b82f6;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #93c5fd;
+      margin-bottom: 12px;
+      padding: 12px 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: black;
+    }
+
+    li.completed span {
+      text-decoration: line-through;
+      color: #555;
+    }
+
+    .delete {
+      background: #1e3a8a;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .delete:hover {
+      background: #3b82f6;
+    }
+
+    /* Notes */
+    .note-box {
+      background: #bfdbfe;
+      color: black;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .note-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .note-title {
+      font-weight: bold;
+      font-size: 1.1em;
+      margin-bottom: 5px;
+    }
+
+    /* To-Do list */
+    .todo-box {
+      background: #bfdbfe;
+      color: black;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+
+    .todo-title {
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .main {
+        flex-direction: column;
+      }
+      .input-row {
+        flex-direction: column;
+      }
+      input[type="text"] {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="main">
+    <!-- Notes -->
+    <div class="panel">
+      <h1>Notes</h1>
+      <div class="input-row">
+        <input id="noteTitle" type="text" placeholder="Note title..." />
+        <input id="noteInput" type="text" placeholder="Write a note..." />
+        <button onclick="addNote()">Add</button>
+      </div>
+      <div id="noteList"></div>
+    </div>
+
+    <!-- To-Do -->
+    <div class="panel">
+      <h1>To-Do Lists</h1>
+      <button onclick="createTodoBox()">➕ New To-Do List</button>
+      <div id="todoContainer"></div>
+    </div>
+  </div>
+
+  <script>
+    let notes = [];
+
+    // ===== Notes =====
+    function loadNotes() {
+      const storedNotes = localStorage.getItem("noteList");
+      notes = storedNotes ? JSON.parse(storedNotes) : [];
+      renderNotes();
+    }
+
+    function saveNotes() {
+      localStorage.setItem("noteList", JSON.stringify(notes));
+    }
+
+    function addNote() {
+      const titleInput = document.getElementById("noteTitle");
+      const input = document.getElementById("noteInput");
+      const title = titleInput.value.trim();
+      const text = input.value.trim();
+      if (!title && !text) return alert("Enter title or note!");
+      const note = { id: Date.now(), title, text, editing: false };
+      notes.push(note);
+      saveNotes();
+      renderNotes();
+      titleInput.value = "";
+      input.value = "";
+    }
+
+    function deleteNote(id) {
+      notes = notes.filter(n => n.id !== id);
+      saveNotes();
+      renderNotes();
+    }
+
+    function editNote(id) {
+      notes = notes.map(n =>
+        n.id === id ? { ...n, editing: true } : n
+      );
+      renderNotes();
+    }
+
+    function saveNote(id) {
+      const input = document.getElementById("edit-" + id);
+      const newText = input.value.trim();
+      notes = notes.map(n =>
+        n.id === id ? { ...n, text: newText, editing: false } : n
+      );
+      saveNotes();
+      renderNotes();
+    }
+
+    function renderNotes() {
+      const list = document.getElementById("noteList");
+      if (notes.length === 0) {
+        list.innerHTML = "<p>No notes yet!</p>";
+        return;
+      }
+      list.innerHTML = notes.map(n => `
+        <div class="note-box">
+          ${n.title ? `<div class="note-title">${n.title}</div>` : ""}
+          ${n.editing 
+            ? `<input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/>` 
+            : `<div class="note-text">${n.text}</div>`}
+          <div class="note-actions">
+            ${n.editing 
+              ? `<button onclick="saveNote(${n.id})">Save</button>` 
+              : `<button onclick="editNote(${n.id})">Edit</button>`}
+            <button class="delete" onclick="deleteNote(${n.id})">Delete</button>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    // ===== To-Do =====
+    function createTodoBox() {
+      const todoBox = document.createElement("div");
+      todoBox.className = "todo-box";
+
+      const titleInput = document.createElement("input");
+      titleInput.type = "text";
+      titleInput.placeholder = "List title...";
+      titleInput.onchange = () => {
+        titleDiv.textContent = titleInput.value || "Untitled";
+        titleInput.style.display = "none";
+        titleDiv.style.display = "block";
+      };
+
+      const titleDiv = document.createElement("div");
+      titleDiv.className = "todo-title";
+      titleDiv.textContent = "Untitled";
+      titleDiv.style.display = "none";
+      titleDiv.onclick = () => {
+        titleInput.style.display = "block";
+        titleDiv.style.display = "none";
+        titleInput.focus();
+      };
+
+      const inputRow = document.createElement("div");
+      inputRow.className = "input-row";
+
+      const input = document.createElement("input");
+      input.type = "text";
+      input.placeholder = "Enter a task...";
+
+      const addBtn = document.createElement("button");
+      addBtn.textContent = "Add Task";
+
+      const ul = document.createElement("ul");
+
+      addBtn.onclick = () => {
+        if (input.value.trim() === "") return;
+        const li = document.createElement("li");
+
+        const span = document.createElement("span");
+        span.textContent = input.value;
+        span.onclick = () => li.classList.toggle("completed");
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.onclick = () => li.classList.toggle("completed");
+
+        const delBtn = document.createElement("button");
+        delBtn.className = "delete";
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => li.remove();
+
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        li.appendChild(delBtn);
+        ul.appendChild(li);
+        input.value = "";
+      };
+
+      inputRow.appendChild(input);
+      inputRow.appendChild(addBtn);
+
+      todoBox.appendChild(titleInput);
+      todoBox.appendChild(titleDiv);
+      todoBox.appendChild(inputRow);
+      todoBox.appendChild(ul);
+
+      document.getElementById("todoContainer").appendChild(todoBox);
+    }
+
+    window.addEventListener("load", loadNotes);
+  </script>
+</body>
+</html>
