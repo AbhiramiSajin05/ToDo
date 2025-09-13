@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ToDo & Notes</title>
+  <title>ToDo</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
-      padding: 10px;
+      padding: 20px;
       box-sizing: border-box;
       background: #1e3a8a;
       color: white;
@@ -16,36 +16,36 @@
 
     .main {
       display: flex;
-      gap: 15px;
+      gap: 20px;
       flex-wrap: wrap;
       max-width: 1200px;
       margin: auto;
     }
 
     .panel {
-      flex: 1 1 100%;
+      flex: 1 1 500px;
       background: rgba(255,255,255,0.1);
       border-radius: 10px;
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
-      padding: 15px;
+      padding: 25px;
       box-sizing: border-box;
     }
 
     h1 {
       text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 15px;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
     }
 
     .input-row {
       display: flex;
       gap: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
     }
 
     input[type="text"] {
-      padding: 8px;
+      padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
@@ -53,7 +53,7 @@
     }
 
     button {
-      padding: 8px 12px;
+      padding: 10px 15px;
       border: none;
       border-radius: 6px;
       background: #2563eb;
@@ -145,36 +145,14 @@
     }
 
     @media (max-width: 768px) {
-      body {
-        padding: 10px;
-      }
-
       .main {
         flex-direction: column;
-        gap: 10px;
       }
-
-      .panel {
-        padding: 10px;
-      }
-
       .input-row {
         flex-direction: column;
-        gap: 8px;
       }
-
       input[type="text"] {
         width: 100%;
-        padding: 8px;
-      }
-
-      button {
-        width: 100%;
-        padding: 10px;
-      }
-
-      h1 {
-        font-size: 1.4rem;
       }
     }
   </style>
@@ -260,14 +238,14 @@
       }
       list.innerHTML = notes.map(n => `
         <div class="note-box">
-          ${n.title ? `<div class="note-title">${n.title}</div>` : ""}
+          ${n.title ? <div class="note-title">${n.title}</div> : ""}
           ${n.editing 
-            ? `<input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/>` 
-            : `<div class="note-text">${n.text}</div>`}
+            ? <input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/> 
+            : <div class="note-text">${n.text}</div>}
           <div class="note-actions">
             ${n.editing 
-              ? `<button onclick="saveNote(${n.id})">Save</button>` 
-              : `<button onclick="editNote(${n.id})">Edit</button>`}
+              ? <button onclick="saveNote(${n.id})">Save</button> 
+              : <button onclick="editNote(${n.id})">Edit</button>}
             <button class="delete" onclick="deleteNote(${n.id})">Delete</button>
           </div>
         </div>
