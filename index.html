@@ -29,6 +29,7 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.2);
       padding: 25px;
       box-sizing: border-box;
+      min-width: 300px;
     }
 
     h1 {
@@ -60,6 +61,7 @@
       color: white;
       cursor: pointer;
       transition: background 0.3s;
+      flex-shrink: 0;
     }
 
     button:hover {
@@ -82,6 +84,8 @@
       align-items: center;
       justify-content: space-between;
       color: black;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     li.completed span {
@@ -120,6 +124,7 @@
       display: flex;
       gap: 10px;
       justify-content: flex-end;
+      flex-wrap: wrap;
     }
 
     .note-title {
@@ -144,15 +149,34 @@
       margin-bottom: 10px;
     }
 
+    /* 📱 Mobile adjustments */
     @media (max-width: 768px) {
       .main {
         flex-direction: column;
+        gap: 15px;
       }
+
+      .panel {
+        width: 100%;
+        padding: 20px;
+      }
+
       .input-row {
         flex-direction: column;
+        gap: 12px;
       }
-      input[type="text"] {
+
+      input[type="text"], button {
         width: 100%;
+      }
+
+      li {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .note-actions {
+        justify-content: flex-start;
       }
     }
   </style>
@@ -238,14 +262,14 @@
       }
       list.innerHTML = notes.map(n => `
         <div class="note-box">
-          ${n.title ? <div class="note-title">${n.title}</div> : ""}
+          ${n.title ? `<div class="note-title">${n.title}</div>` : ""}
           ${n.editing 
-            ? <input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/> 
-            : <div class="note-text">${n.text}</div>}
+            ? `<input id="edit-${n.id}" type="text" value="${n.text}" style="margin-bottom:10px;"/>` 
+            : `<div class="note-text">${n.text}</div>`}
           <div class="note-actions">
             ${n.editing 
-              ? <button onclick="saveNote(${n.id})">Save</button> 
-              : <button onclick="editNote(${n.id})">Edit</button>}
+              ? `<button onclick="saveNote(${n.id})">Save</button>` 
+              : `<button onclick="editNote(${n.id})">Edit</button>`}
             <button class="delete" onclick="deleteNote(${n.id})">Delete</button>
           </div>
         </div>
@@ -327,4 +351,3 @@
   </script>
 </body>
 </html>
-
